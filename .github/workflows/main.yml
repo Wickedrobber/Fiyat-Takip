@@ -1,23 +1,33 @@
 name: TV Fiyat Takip Botu
+
 on:
   schedule:
-    - cron: '*/30 * * * *' # Her 30 dakikada bir otomatik çalışır
-  workflow_dispatch: # İstediğin zaman manuel çalıştırmanı sağlar
+    # Her 30 dakikada bir otomatik çalışır (Dünya saatine göre)
+    - cron: '*/30 * * * *'
+  # Manuel olarak Actions sekmesinden çalıştırmanı sağlar
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Kodları Çek
-        uses: actions/checkout@v3
-      - name: Python Kur
-        uses: actions/setup-python@v4
+      - name: Kodları GitHub'dan Çek
+        uses: actions/checkout@v4
+
+      - name: Python Kurulumu
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
-      - name: Kütüphaneleri Kur
-        run: pip install requests beautifulsoup4
-      - name: Botu Çalıştır
+          python-version: '3.11' # En güncel ve kararlı sürüm
+
+      - name: Gerekli Kütüphaneleri Yükle
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests beautifulsoup4 cloudscraper
+
+      - name: Fiyat Takip Botunu Çalıştır
         env:
+          # GitHub Secrets kısmına eklediğin şifreleri buradan koda aktarıyoruz
           TG_TOKEN: ${{ secrets.TG_TOKEN }}
           TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
         run: python fiyat_takip.py
