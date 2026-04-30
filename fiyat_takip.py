@@ -4,9 +4,11 @@ import os
 import time
 import re
 
+# GitHub Secrets
 TOKEN = os.environ.get('TG_TOKEN')
 CHAT_ID = os.environ.get('TG_CHAT_ID')
 
+# TAKİP LİSTESİ - Buranın tam olduğundan emin olalım
 URUNLER = [
     {"ad": "Samsung 65S90F", "limit": 110000, "linkler": ["https://www.akakce.com/televizyon/en-ucuz-samsung-65s90f-4k-ultra-hd-65-165-ekran-uydu-alicili-smart-oled-tv-fiyati,1052512435.html", "https://www.cimri.com/televizyonlar/en-ucuz-samsung-65s90f-65-inc-164-ekran-4k-ultra-hd-tizen-oled-tv-fiyatlari,2426790514"]},
     {"ad": "Samsung 55S90F", "limit": 65000, "linkler": ["https://www.akakce.com/televizyon/en-ucuz-samsung-55s90f-4k-ultra-hd-55-140-ekran-uydu-alicili-smart-oled-tv-fiyati,1052489977.html"]},
@@ -18,36 +20,38 @@ URUNLER = [
 
 def mesaj_gonder(mesaj):
     url = f"https://api.telegram.org/bot{TOKEN}/sendMessage?chat_id={CHAT_ID}&text={mesaj}"
-    try: cloudscraper.create_scraper().get(url)
-    except: pass
+    try:
+        cloudscraper.create_scraper().get(url)
+    except:
+        pass
 
 def fiyat_ayikla(soup, link):
     try:
-        if "akakce.com" in link:
-            # Akakçe fiyatını bulmak için genişletilmiş arama
-            etiket = soup.find("span", {"class": re.compile(r"pt_v8|v8")})
-            if not etiket: etiket = soup.select_one(".p_w_v8, .pt_v8")
-        else:
-            # Cimri için JSON-LD veya genişletilmiş class arama
-            etiket = soup.find("span", {"class": re.compile(r"Price|price")})
-            if not etiket: etiket = soup.select_one('div[class*="price"], span[class*="Price"]')
-        
-        if etiket:
-            rakam = re.sub(r'[^\d]', '', etiket.text.split(',')[0])
-            return int(rakam)
-    except: return None
+        # Akakce ve Cimri icin ortak sayi yakalayici
+        resim_alti_fiyat = soup.select_one('span.pt_v8, span.v8, div[class*="price"], span[class*="Price"]')
+        if resim_alti_fiyat:
+            # Sadece rakamlari al (nokta ve virgul sonrasini at)
+            ham_fiyat = resim_alti_fiyat.text.split(',')[0]
+            temiz_fiyat = re.sub(r'[^\d]', '', ham_fiyat)
+            return int(temiz_fiyat)
+    except:
+        return None
     return None
 
 def tarama_yap():
-    # Gerçek bir tarayıcı gibi davranması için detaylı ayar
-    scraper = cloudscraper.create_scraper(
-        browser={'browser': 'chrome', 'platform': 'windows', 'desktop': True}
-    )
-    print("--- TARAMA BAŞLADI ---")
+    scraper = cloudscraper.create_scraper(browser={'browser': 'chrome', 'platform': 'windows', 'desktop': True})
     
+    print(f"--- TARAMA BAŞLADI ({len(URUNLER)} ürün kontrol edilecek) ---")
+    
+    if len(URUNLER) == 0:
+        print("HATA: Ürün listesi boş!")
+        return
+
     for urun in URUNLER:
         en_ucuz = 999999
         bulunan_link = ""
+        
+        print(f"\nŞu an kontrol ediliyor: {urun['ad']}")
         
         for link in urun['linkler']:
             try:
@@ -55,20 +59,26 @@ def tarama_yap():
                 if res.status_code == 200:
                     soup = BeautifulSoup(res.text, 'html.parser')
                     fiyat = fiyat_ayikla(soup, link)
-                    print(f"Kontrol: {urun['ad']} | Fiyat: {fiyat} TL | Kaynak: {link[:25]}...")
+                    
+                    print(f"  - Kaynak: {link[:30]}... | Bulunan: {fiyat} TL")
                     
                     if fiyat and fiyat < en_ucuz:
                         en_ucuz = fiyat
                         bulunan_link = link
-                time.sleep(5) # Ban yememek için bekleme süresi
+                else:
+                    print(f"  - Kaynak engellendi (Hata kodu: {res.status_code})")
+                
+                time.sleep(3)
             except Exception as e:
-                print(f"Hata: {e}")
+                print(f"  - Bağlantı hatası: {e}")
 
         if en_ucuz <= urun['limit'] and en_ucuz != 999999:
+            print(f"  >> LİMİT ALTI! Bildirim gönderiliyor...")
             mesaj_gonder(f"✅ İNDİRİM YAKALANDI!\n\n📺 {urun['ad']}\n💰 Fiyat: {en_ucuz} TL\n🎯 Hedef: {urun['limit']} TL\n🔗 {bulunan_link}")
-            print(f"--- Bildirim Gönderildi: {en_ucuz} TL ---")
+        else:
+            print(f"  >> Limit altı fiyat bulunamadı (En ucuz: {en_ucuz} TL)")
 
-    print("--- TARAMA BİTTİ ---")
+    print("\n--- TARAMA BİTTİ ---")
 
 if __name__ == "__main__":
     tarama_yap()
