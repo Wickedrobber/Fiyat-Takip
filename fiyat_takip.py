@@ -11,7 +11,7 @@ CHAT_ID = os.environ['TG_CHAT_ID']
 URUNLER = [
     {
         "ad": "Samsung 65S90F",
-        "limit": 80000,
+        "limit": 100000,
         "linkler": [
             "https://www.akakce.com/televizyon/en-ucuz-samsung-65s90f-4k-ultra-hd-65-165-ekran-uydu-alicili-smart-oled-tv-fiyati,1052512435.html",
             "https://www.cimri.com/televizyonlar/en-ucuz-samsung-65s90f-65-inc-164-ekran-4k-ultra-hd-tizen-oled-tv-fiyatlari,2426790514"
