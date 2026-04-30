@@ -9,7 +9,7 @@ CHAT_ID = os.environ.get('TG_CHAT_ID')
 
 # TAKİP LİSTESİ
 URUNLER = [
-    {"ad": "Samsung 65S90F", "limit": 80000, "linkler": ["https://www.akakce.com/televizyon/en-ucuz-samsung-65s90f-4k-ultra-hd-65-165-ekran-uydu-alicili-smart-oled-tv-fiyati,1052512435.html", "https://www.cimri.com/televizyonlar/en-ucuz-samsung-65s90f-65-inc-164-ekran-4k-ultra-hd-tizen-oled-tv-fiyatlari,2426790514"]},
+    {"ad": "Samsung 65S90F", "limit": 110000, "linkler": ["https://www.akakce.com/televizyon/en-ucuz-samsung-65s90f-4k-ultra-hd-65-165-ekran-uydu-alicili-smart-oled-tv-fiyati,1052512435.html", "https://www.cimri.com/televizyonlar/en-ucuz-samsung-65s90f-65-inc-164-ekran-4k-ultra-hd-tizen-oled-tv-fiyatlari,2426790514"]},
     {"ad": "Samsung 55S90F", "limit": 65000, "linkler": ["https://www.akakce.com/televizyon/en-ucuz-samsung-55s90f-4k-ultra-hd-55-140-ekran-uydu-alicili-smart-oled-tv-fiyati,1052489977.html", "https://www.cimri.com/televizyonlar/en-ucuz-samsung-55s90f-55-inc-140-ekran-4k-ultra-hd-tizen-oled-tv-fiyatlari,2426790505"]},
     {"ad": "LG OLED65C54LA", "limit": 70000, "linkler": ["https://www.akakce.com/televizyon/en-ucuz-lg-oled65c54la-4k-ultra-hd-65-165-ekran-uydu-alicili-webos-smart-oled-evo-tv-fiyati,1062998434.html", "https://www.cimri.com/televizyonlar/en-ucuz-lg-oled65c54la-65-inc-165-ekran-4k-ultra-hd-webos-oled-evo-tv-fiyatlari,2475515119"]},
     {"ad": "LG OLED55C54LA", "limit": 60000, "linkler": ["https://www.cimri.com/televizyonlar/en-ucuz-lg-oled55c54la-55-inc-139-ekran-4k-ultra-hd-webos-oled-evo-tv-fiyatlari,2526396033"]},
